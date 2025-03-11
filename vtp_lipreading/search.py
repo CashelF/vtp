@@ -122,7 +122,7 @@ def beam_search(
 
         decoder_input = alive_seq  # complete prediction so far
 
-        from dataloader import subsequent_mask
+        from .dataloader import subsequent_mask
         logits = decoder.decode(encoder_output, 
                             src_mask,
                             decoder_input,

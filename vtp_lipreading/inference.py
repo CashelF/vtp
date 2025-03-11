@@ -7,20 +7,21 @@ from torch.autograd import Variable
 from tqdm import tqdm
 from glob import glob
 
-from dataloader import VideoDataset, AugmentationPipeline
+from .dataloader import VideoDataset, AugmentationPipeline
 
-from config import load_args, start_symbol, end_symbol
-from models import builders
-from utils import load
+from .config import load_args, start_symbol, end_symbol
+from .models import builders
+from .utils import load
 
-from torch.cuda.amp import autocast
-from search import beam_search
+from torch.amp import autocast
+from .search import beam_search
 
 args = load_args()
 augmentor = AugmentationPipeline(args)
 
 def forward_pass(model, src, src_mask):
 	encoder_output, src_mask = model.encode(src, src_mask)
+	
 
 	beam_outs, beam_scores = beam_search(
 			decoder=model,
@@ -34,7 +35,7 @@ def forward_pass(model, src, src_mask):
 			alpha=args.beam_len_alpha,
 			n_best=args.beam_size,
 		)
-
+ 
 	return beam_outs, beam_scores
 
 def get_lm_score(lm, lm_tokenizer, texts):
@@ -79,7 +80,7 @@ def run(vidpath, dataloader, model, lm=None, lm_tokenizer=None, display=True):
 		cur_src_mask = torch.ones((1, 1, cur_src.size(2))).to(args.device)
 
 		with torch.no_grad():
-			with autocast():
+			with autocast('cuda'):
 				beam_outs, beam_scores = forward_pass(model, cur_src, cur_src_mask)
 				beam_outs_f, beam_scores_f = forward_pass(model, 
 								augmentor.horizontal_flip(cur_src), cur_src_mask)

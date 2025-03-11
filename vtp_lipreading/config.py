@@ -57,7 +57,7 @@ def load_args():
 
   # inference params
   parser.add_argument('--fpath', type=str, default=None, help='The path to the video file')
-  parser.add_argument('--max_decode_len', type=int, default=-1)
+  parser.add_argument('--max_decode_len', type=int, default=35) # TODO: had to make this 35 to make it work, but hacky way to do this, refactor this shit heavy, no args bullshit
   parser.add_argument('--chunk_size', type=int, default=100, help='Chunk input video every `chunk_size` seconds')
   parser.add_argument('--ss', type=float, default=None, help='Crop video from this second')
   parser.add_argument('--es', type=float, default=None, help='Crop video up to this second')

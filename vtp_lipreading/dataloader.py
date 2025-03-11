@@ -6,14 +6,14 @@ from torch.autograd import Variable
 import pandas as pd
 
 import numpy as np
-from config import load_args
+from .config import load_args
 
 args = load_args()
 
 from decord import VideoReader
 from glob import glob
 
-from config import load_args, pad_token, bos_token, eos_token, unk_token
+from .config import load_args, pad_token, bos_token, eos_token, unk_token
 from transformers import AutoTokenizer
 tokenizer = AutoTokenizer.from_pretrained('bert-large-uncased', cache_dir='checkpoints/tokenizers', 
 		bos_token=bos_token, eos_token=eos_token, pad_token=pad_token, unk_token=unk_token, 

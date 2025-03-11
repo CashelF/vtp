@@ -4,11 +4,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from modules import EncoderDecoder, PositionwiseFeedForward, PositionalEncoding, EncoderLayer, \
+from .modules import EncoderDecoder, PositionwiseFeedForward, PositionalEncoding, EncoderLayer, \
         DecoderLayer, MultiHeadedAttention, Encoder, Decoder, \
         Generator, Embeddings
 
-from modules import CNN_3d_featextractor, CNN_3d, VTP, VTP_wrapper
+from .modules import CNN_3d_featextractor, CNN_3d, VTP, VTP_wrapper
 
 def CNN_Baseline(vocab, visual_dim, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1, 
                     backbone=True):
