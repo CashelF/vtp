@@ -7,7 +7,7 @@ setup(
     author='prajwalkr',
     author_email='prajwalrenukanand@gmail.com',
     url='https://github.com/prajwalkr/vtp',
-    py_modules=['config', 'dataloader', 'extract_feats', 'inference', 'models', 'modules', 'score', 'search', 'utils'],
+    packages=find_packages(),
     include_package_data=True,
     package_data={
         'vtp_lipreading': ['checkpoints/*', 'feature_extractors/*'],
@@ -24,8 +24,8 @@ setup(
         'Pillow==10.4.0',
         'scipy==1.10.1',
         'tokenizers==0.20.0',
-        'torch==2.4.1+cu124',
-        'torchvision==0.19.1',
+        'torch',
+        'torchvision',
         'tqdm==4.67.1',
         'transformers==4.46.3'
     ],

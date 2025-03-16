@@ -1,7 +1,0 @@
-README.md
-setup.py
-vtp_lipreading.egg-info/PKG-INFO
-vtp_lipreading.egg-info/SOURCES.txt
-vtp_lipreading.egg-info/dependency_links.txt
-vtp_lipreading.egg-info/requires.txt
-vtp_lipreading.egg-info/top_level.txt
