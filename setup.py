@@ -10,7 +10,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={
-        'vtp_lipreading': ['checkpoints/*', 'feature_extractors/*'],
+        'vtp_lipreading': ['checkpoints/tokenizers/**/*'],
     },
     install_requires=[
         'ConfigArgParse==1.7',
