@@ -12,8 +12,6 @@ from utils import load
 
 from glob import glob
 
-from torch.cuda.amp import autocast
-
 def init(args):
 	data_util = VideoDataset(args)
 
@@ -32,7 +30,7 @@ def dump_feats(vid_paths, feat_paths, model, data_util):
 		with torch.no_grad():
 			src = augmentor(src).detach()
 			src_mask = torch.ones((1, 1, src.size(2)))
-			with autocast():
+			with torch.amp.autocast('cuda'):
 				src = src.cuda()
 				src_mask = src_mask.cuda()
 				outs = []

@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math, copy, time
 from torch.autograd import Variable
-from torch.cuda.amp import autocast
 from einops.layers.torch import Rearrange
 from einops import rearrange
 from linear_attention_transformer import LinearAttentionTransformer
@@ -19,13 +18,13 @@ class EncoderDecoder(nn.Module):
         self.tgt_embed = tgt_embed
         self.generator = generator
     
-    @autocast()
+    @torch.amp.autocast('cuda')
     def forward(self, src=None, tgt=None, src_mask=None, tgt_mask=None):
         encoder_out, src_mask = self.encode(src, src_mask)
         return self.decode(encoder_out, src_mask,
                             tgt, tgt_mask)
 
-    @autocast()
+    @torch.amp.autocast('cuda')
     def encode(self, src, src_mask):
         if hasattr(self, 'face_encoder'):
             src = self.face_encoder(src, src_mask)
@@ -37,7 +36,7 @@ class EncoderDecoder(nn.Module):
 
         return self.encoder(src_embeddings, src_mask), src_mask
 
-    @autocast()
+    @torch.amp.autocast('cuda')
     def decode(self, memory, src_mask, tgt, tgt_mask):
         return self.generator(self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask))
 
@@ -59,14 +58,14 @@ class Silencer(nn.Module):
         self.src_embed = src_embed
         self.generator = generator
     
-    @autocast()
+    @torch.amp.autocast('cuda')
     def forward(self, src, src_mask):
         encoder_out = self.encode(src, src_mask)
         out = self.generator(encoder_out).squeeze(2)
 
         return out
 
-    @autocast()
+    @torch.amp.autocast('cuda')
     def encode(self, src, src_mask):
         if hasattr(self, 'face_encoder'):
             src = self.face_encoder(src, src_mask)
@@ -137,7 +136,7 @@ def attention(query, key, value, mask=None, dropout=None):
     d_k = query.size(-1)
     scores = torch.matmul(query, key.transpose(-2, -1)) \
              / math.sqrt(d_k)
-    with autocast(enabled=False):
+    with torch.amp.autocast('cuda', enabled=False):
         if mask is not None:
             scores = scores.float()
             scores = scores.masked_fill(mask == 0, -1e9)
@@ -323,7 +322,7 @@ class CNN_3d(nn.Module):
             Conv3d(512, 512, kernel_size=(1, 3, 3), stride=(1, 2, 2), padding=(0, 1, 1)), # 3, 3
             Conv3d(512, d_model, kernel_size=(1, 3, 3), stride=1, padding=(0, 0, 0)),)
 
-    @autocast()
+    @torch.amp.autocast('cuda')
     def forward(self, faces, mask):
         assert faces.size(3) == 96
         assert faces.size(4) == 96
@@ -375,7 +374,7 @@ class CNN_3d_featextractor(nn.Module):
 
         self.encoder = nn.Sequential(*layers)
 
-    @autocast()
+    @torch.amp.autocast('cuda')
     def forward(self, faces, mask):
         assert faces.size(3) == 96
         assert faces.size(-1) == 96
@@ -414,7 +413,7 @@ class VTP_wrapper(nn.Module):
 
         self.encoder = encoder
 
-    @autocast()
+    @torch.amp.autocast('cuda')
     def forward(self, faces, mask):
         faces = self.feat_extrator(faces, mask)
         faces = faces.transpose(1, 2) # (B, T, C, H, W)
@@ -482,7 +481,7 @@ class VTP(nn.Module):
                                     attn_layer_dropout = 0.1, attn_dropout = 0.1))
             cur_dim = dim
 
-    @autocast()
+    @torch.amp.autocast('cuda')
     def forward(self, face_tokens, cls_token=None):
         x = face_tokens
         for i, (patch_maker, transformer) in enumerate(zip(self.patch_projectors, 
